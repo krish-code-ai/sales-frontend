@@ -72,7 +72,7 @@ export default function OrdersCharts() {
       if (!res.ok) throw new Error("Failed to fetch summary");
       const json: SummaryResponse = await res.json();
       setData(json);
-    } catch (e: any) {
+    } catch (e: unknown) {
       setError(e.message || "Unknown error");
     } finally {
       setLoading(false);
