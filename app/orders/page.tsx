@@ -9,7 +9,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { getOrders, getLocations } from "@/server/orders";
 import Papa from "papaparse";
 import Menu from "@/components/menu";
-import { signIn, useSession } from "next-auth/react";
+// import { signIn, useSession } from "next-auth/react";
 
 interface Order {
   id: string;
@@ -66,7 +66,7 @@ export default function OrdersTable() {
 
   const exportCSV = async () => {
     try {
-      let allData: any[] = [];
+      let allData: number[] = [];
       let currentPage = 1;
       let totalPages = 1;
 
