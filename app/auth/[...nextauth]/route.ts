@@ -1,6 +1,9 @@
-import NextAuth from "next-auth";
+import NextAuth, { User } from "next-auth";
+import { JWT } from "next-auth/jwt";
 import CredentialsProvider from "next-auth/providers/credentials";
+
 const API_URL = process.env.BACKEND_APP_URL;
+
 export const authOptions = {
   providers: [
     CredentialsProvider({
@@ -12,7 +15,6 @@ export const authOptions = {
       async authorize(credentials) {
         if (!credentials) return null;
 
-        // Call your Laravel login API
         const res = await fetch(`${API_URL}/login`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -25,31 +27,30 @@ export const authOptions = {
         const user = await res.json();
 
         if (res.ok && user) {
-          // user should include { token, user info }
-          return user;
+          return user; // must include { token, ... }
         }
-
-        return null; // login failed
+        return null;
       },
     }),
   ],
   session: {
-    strategy: "jwt", // store session in JWT
+    strategy: "jwt",
   },
   pages: {
-    signIn: "/auth/signin", // custom login page
+    signIn: "/auth/signin",
   },
   callbacks: {
-    async jwt({ token, user }) {
-      // Store Laravel token in JWT
+    async jwt({ token, user }: { token: JWT; user?: User & { token?: string } }) {
       if (user?.token) {
         token.accessToken = user.token;
       }
       return token;
     },
     async session({ session, token }) {
-      // Make token available in session
-      session.user = { ...session.user, token: token.accessToken };
+      if (session.user) {
+        session.user.token = token.accessToken as string;
+      }
+      session.accessToken = token.accessToken as string;
       return session;
     },
   },
