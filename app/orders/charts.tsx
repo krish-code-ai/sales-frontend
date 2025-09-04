@@ -73,7 +73,11 @@ export default function OrdersCharts() {
       const json: SummaryResponse = await res.json();
       setData(json);
     } catch (e: unknown) {
-      setError(e.message || "Unknown error");
+        if (e instanceof Error) {
+            setError(e.message);
+        } else {
+            setError("Unknown error");
+        }
     } finally {
       setLoading(false);
     }
